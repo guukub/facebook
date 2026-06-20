@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Property {
+  id            String      @id @default(uuid())
+  name          String
+  propertyType  String      
+  price         Float
+  location      String
+  description   String
+  sellingPoints String
+  phone         String
+  lineId        String
+  images        String      
+  status        String      
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  PostQueue     PostQueue[]
+}
+
+model FacebookGroup {
+  id          String      @id @default(uuid())
+  name        String
+  url         String      @unique
+  category    String
+  province    String
+  isActive    Boolean     @default(true)
+  memberCount Int         @default(0)
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  PostQueue   PostQueue[]
+}
+
+model PostQueue {
+  id           String        @id @default(uuid())
+  propertyId   String
+  groupId      String
+  caption      String
+  images       String        
+  status       String        
+  errorMessage String?
+  postedAt     DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  property     Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  group        FacebookGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
+
+model AutomationSetting {
+  id         String   @id @default(uuid())
+  minDelay   Int      @default(60)
+  maxDelay   Int      @default(180)
+  batchLimit Int      @default(10)
+  isActive   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Log {
+  id        String   @id @default(uuid())
+  message   String
+  status    String   
+  createdAt DateTime @default(now())
+}
